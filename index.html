@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chronexa — Contractor Workspace</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Chronexa">
+<meta name="theme-color" content="#07111f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800;900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --bg:#07111f;--bg2:#0b1829;--bg3:#0f1e33;
+  --panel:rgba(12,22,40,0.82);--panel2:rgba(16,30,55,0.9);
+  --line:rgba(255,255,255,0.09);--line2:rgba(255,255,255,0.16);
+  --text:#eef6ff;--muted:#9fb2ce;--muted2:#607a9c;
+  --cyan:#21d4fd;--blue:#4589ff;--violet:#a855f7;--indigo:#6366f1;
+  --green:#35e2a1;--amber:#f7c948;--red:#ff5c7a;--pink:#ec4899;
+  --shadow:0 24px 80px rgba(0,0,0,0.5);
+  --r1:28px;--r2:20px;--r3:14px;--r4:10px;
+  --sidebar:270px;--topbar:72px;
+  --tr:220ms cubic-bezier(0.4,0,0.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;color:var(--text);
+  background:radial-gradient(ellipse at top left,rgba(33,212,253,0.14),transparent 40%),
+    radial-gradient(ellipse at top right,rgba(168,85,247,0.14),transparent 38%),
+    linear-gradient(160deg,#050b14,#07111f 50%,#0a0f1e);
+  min-height:100vh;overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:radial-gradient(ellipse at center,black,transparent 75%);
+  z-index:-1;
+}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:none;background:none;color:inherit}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:2px}
+.hidden{display:none!important}
+
+/* ──────────── LOGIN ──────────── */
+#loginScreen{
+  min-height:100vh;display:grid;
+  grid-template-columns:1.1fr 0.9fr;gap:40px;padding:40px;align-items:center;
+}
+.login-hero{
+  min-height:calc(100vh - 80px);border-radius:36px;
+  border:1px solid var(--line);overflow:hidden;position:relative;
+  display:flex;flex-direction:column;justify-content:space-between;padding:40px;
+  background:linear-gradient(145deg,rgba(12,22,40,0.8),rgba(8,16,30,0.5)),
+    url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1400&q=80') center/cover;
+}
+.login-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 18% 12%,rgba(33,212,253,0.32),transparent 32rem),
+    radial-gradient(circle at 80% 75%,rgba(168,85,247,0.28),transparent 28rem),
+    linear-gradient(90deg,rgba(5,11,20,0.88),rgba(5,11,20,0.22));
+  z-index:0;
+}
+.login-hero>*{position:relative;z-index:1}
+.brand{display:flex;align-items:center;gap:14px;font-family:'Syne',sans-serif;font-weight:900;font-size:1.4rem;letter-spacing:-0.04em}
+.brand-mark{width:46px;height:46px;border-radius:16px;background:linear-gradient(135deg,var(--cyan),var(--violet));display:grid;place-items:center;box-shadow:0 12px 40px rgba(33,212,253,0.28)}
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(3rem,6vw,6rem);line-height:.92;letter-spacing:-0.07em;font-weight:900;margin:0 0 22px}
+.hero-title span{background:linear-gradient(90deg,#fff,#b8f0ff 40%,#d8b4fe);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-copy{color:#c2d6ee;font-size:1.05rem;line-height:1.8;max-width:600px}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:32px}
+.hero-stat{padding:16px;border:1px solid var(--line);background:rgba(255,255,255,0.07);backdrop-filter:blur(14px);border-radius:20px}
+.hero-stat strong{display:block;font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:900}
+.hero-stat span{color:#b0c6de;font-size:.82rem}
+.login-card{border:1px solid var(--line2);border-radius:32px;background:rgba(8,18,34,0.82);backdrop-filter:blur(28px);padding:36px;box-shadow:var(--shadow)}
+.login-card h2{font-family:'Syne',sans-serif;font-weight:900;font-size:2rem;letter-spacing:-0.05em;margin-bottom:8px}
+.login-card>p{color:var(--muted);line-height:1.7;margin-bottom:26px}
+.role-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:6px;background:rgba(255,255,255,0.06);border:1px solid var(--line);border-radius:18px;margin-bottom:22px}
+.role-tab{border:0;border-radius:13px;padding:12px;color:var(--muted);background:transparent;font-weight:700;font-size:.9rem;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:8px}
+.role-tab.active{background:linear-gradient(135deg,rgba(33,212,253,0.22),rgba(168,85,247,0.2));color:var(--text);box-shadow:inset 0 0 0 1px var(--line2)}
+.field{margin-bottom:15px}
+.field label{display:block;color:var(--muted);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px}
+.inp{display:flex;align-items:center;gap:11px;border:1px solid var(--line);background:rgba(255,255,255,0.06);border-radius:14px;padding:0 14px;transition:var(--tr)}
+.inp:focus-within{border-color:rgba(33,212,253,.55);box-shadow:0 0 0 4px rgba(33,212,253,.08)}
+.inp i{color:var(--muted2);font-size:.9rem;flex-shrink:0}
+.inp input,.inp select,.inp textarea{width:100%;border:0;outline:0;color:var(--text);background:transparent;min-height:48px;font-size:.95rem}
+.inp select option{background:#07111f}
+.inp textarea{padding:14px 0;min-height:90px;resize:vertical}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:12px 18px;border-radius:14px;font-weight:700;font-size:.9rem;transition:var(--tr);white-space:nowrap;border:1px solid var(--line);background:rgba(255,255,255,0.07);color:var(--text);cursor:pointer}
+.btn:hover{transform:translateY(-2px);border-color:var(--line2)}
+.btn.primary{background:linear-gradient(135deg,var(--cyan),var(--blue) 48%,var(--violet));box-shadow:0 16px 48px rgba(69,137,255,0.32);color:#fff;border:0}
+.btn.primary:hover{box-shadow:0 22px 56px rgba(69,137,255,0.44)}
+.btn.success{background:linear-gradient(135deg,rgba(53,226,161,.95),rgba(33,212,253,.75));color:#021810;border:0}
+.btn.danger{background:linear-gradient(135deg,rgba(255,92,122,.92),rgba(236,72,153,.72));border:0}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.full{width:100%;justify-content:center}
+.btn.sm{padding:8px 13px;font-size:.82rem}
+.mini-note{margin-top:16px;color:var(--muted2);font-size:.82rem;line-height:1.6;text-align:center}
+
+/* ──────────── APP SHELL ──────────── */
+.app-shell{min-height:100vh;display:grid;grid-template-columns:var(--sidebar) 1fr}
+.sidebar{
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  border-right:1px solid var(--line);background:rgba(5,12,22,0.82);
+  backdrop-filter:blur(28px);padding:20px 16px;z-index:20;
+}
+.sidebar .brand{margin-bottom:22px}
+.profile-mini{display:flex;gap:11px;align-items:center;padding:14px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(33,212,253,0.08),rgba(168,85,247,0.09));margin-bottom:18px}
+.avatar{width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,var(--cyan),var(--violet));display:grid;place-items:center;font-family:'Syne',sans-serif;font-weight:900;font-size:1.1rem;color:#fff;flex-shrink:0;overflow:hidden;object-fit:cover}
+.profile-mini strong{display:block;font-size:.9rem;font-weight:700}
+.profile-mini span{color:var(--muted);font-size:.76rem}
+.nav-label{margin:18px 12px 7px;color:var(--muted2);text-transform:uppercase;letter-spacing:.12em;font-size:.64rem;font-weight:900}
+.nav-item{width:100%;border:0;color:var(--muted);background:transparent;display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:14px;margin:2px 0;transition:var(--tr);text-align:left;font-weight:700;font-size:.88rem;position:relative}
+.nav-item i{width:18px;text-align:center;font-size:.9rem}
+.nav-item:hover,.nav-item.active{color:var(--text);background:linear-gradient(135deg,rgba(33,212,253,0.14),rgba(109,93,252,0.13));box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08)}
+.nav-item .badge-dot{margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--red)}
+.main{min-width:0;display:flex;flex-direction:column}
+.topbar{
+  position:sticky;top:0;z-index:15;min-height:var(--topbar);
+  border-bottom:1px solid var(--line);background:rgba(6,14,26,0.72);backdrop-filter:blur(24px);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 26px;
+}
+.page-title h1{font-family:'Syne',sans-serif;font-size:clamp(1.4rem,2.5vw,2.2rem);font-weight:900;letter-spacing:-0.05em;margin:0}
+.page-title p{margin:3px 0 0;color:var(--muted);font-size:.88rem}
+.top-actions{display:flex;align-items:center;gap:10px}
+.search-box{width:min(320px,26vw);min-width:200px}
+.icon-btn{width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,0.06);display:grid;place-items:center;transition:var(--tr);cursor:pointer;position:relative}
+.icon-btn:hover{transform:translateY(-2px);border-color:var(--line2)}
+.red-dot{position:absolute;top:9px;right:9px;width:8px;height:8px;background:var(--red);border-radius:50%;box-shadow:0 0 0 3px rgba(255,92,122,.16)}
+.content{padding:26px;max-width:1700px;margin:0 auto;width:100%;flex:1}
+.view{display:none;animation:fadeUp .26s ease both}
+.view.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ──────────── LAYOUT HELPERS ──────────── */
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g5{grid-template-columns:repeat(5,1fr)}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.mb16{margin-bottom:16px}
+.mb20{margin-bottom:20px}
+
+/* ──────────── CARDS ──────────── */
+.card{border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(20px);border-radius:var(--r1);box-shadow:0 8px 32px rgba(0,0,0,0.28);overflow:hidden;position:relative}
+.card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top left,rgba(33,212,253,0.07),transparent 20rem);pointer-events:none}
+.card>*{position:relative;z-index:1}
+.card.pad{padding:22px}
+.card-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:22px 22px 0;margin-bottom:18px}
+.card-hd h3{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;letter-spacing:-0.02em;margin:0}
+.card-hd p{margin:4px 0 0;color:var(--muted);font-size:.83rem}
+
+/* ──────────── KPI CARDS ──────────── */
+.kpi{padding:20px;min-height:148px;display:flex;flex-direction:column;justify-content:space-between;transition:var(--tr)}
+.kpi:hover{transform:translateY(-3px);border-color:rgba(33,212,253,.25)}
+.kpi-top{display:flex;justify-content:space-between;gap:12px}
+.kpi-icon{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(33,212,253,.2),rgba(168,85,247,.16));border:1px solid var(--line);font-size:1rem}
+.trend{font-size:.75rem;font-weight:900;padding:6px 9px;border-radius:999px;align-self:flex-start}
+.trend.up{color:var(--green);background:rgba(53,226,161,.12);border:1px solid rgba(53,226,161,.22)}
+.trend.warn{color:var(--amber);background:rgba(247,201,72,.12);border:1px solid rgba(247,201,72,.2)}
+.trend.down{color:var(--red);background:rgba(255,92,122,.12);border:1px solid rgba(255,92,122,.2)}
+.kpi-value{font-family:'Syne',sans-serif;font-size:2rem;font-weight:950;letter-spacing:-0.06em;margin-top:22px}
+.kpi-label{color:var(--muted);font-size:.84rem;margin-top:3px}
+
+/* ──────────── TABLE ──────────── */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:separate;border-spacing:0 8px;padding:0 14px 14px}
+th{color:var(--muted2);font-size:.72rem;text-align:left;text-transform:uppercase;letter-spacing:.09em;padding:0 11px 4px;white-space:nowrap}
+td{background:rgba(255,255,255,0.05);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:13px 11px;color:#d8e8f8;font-size:.86rem;white-space:nowrap}
+tr td:first-child{border-left:1px solid var(--line);border-radius:14px 0 0 14px}
+tr td:last-child{border-right:1px solid var(--line);border-radius:0 14px 14px 0}
+tr:hover td{background:rgba(255,255,255,0.07)}
+
+/* ──────────── BADGES ──────────── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;font-size:.72rem;font-weight:900;border:1px solid var(--line)}
+.badge.green{color:#a8ffdf;background:rgba(53,226,161,.12);border-color:rgba(53,226,161,.25)}
+.badge.amber{color:#ffe9a6;background:rgba(247,201,72,.12);border-color:rgba(247,201,72,.24)}
+.badge.red{color:#ffc8d4;background:rgba(255,92,122,.13);border-color:rgba(255,92,122,.27)}
+.badge.blue{color:#bdf0ff;background:rgba(33,212,253,.12);border-color:rgba(33,212,253,.27)}
+.badge.violet{color:#e8d5ff;background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.27)}
+.badge.gray{color:#c0cee0;background:rgba(255,255,255,.07);border-color:var(--line)}
+
+/* ──────────── PROGRESS ──────────── */
+.prog{height:8px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden;border:1px solid var(--line)}
+.prog span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--cyan),var(--violet))}
+
+/* ──────────── TABS ──────────── */
+.tabs{display:inline-flex;flex-wrap:wrap;gap:6px;padding:6px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:16px}
+.tab{border:0;color:var(--muted);background:transparent;border-radius:11px;padding:9px 14px;font-weight:700;font-size:.86rem;transition:var(--tr)}
+.tab.active{color:var(--text);background:linear-gradient(135deg,rgba(33,212,253,.17),rgba(168,85,247,.15));box-shadow:inset 0 0 0 1px var(--line)}
+.tab:hover:not(.active){color:var(--text)}
+
+/* ──────────── TOOLBAR ──────────── */
+.toolbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.toolbar h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:900;letter-spacing:-0.04em;margin:0}
+.toolbar p{margin:5px 0 0;color:var(--muted)}
+.toolbar-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center;flex-shrink:0}
+
+/* ──────────── FORM ──────────── */
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.form-grid .wide{grid-column:1/-1}
+.field-inline{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.field-inline:last-child{border-bottom:0}
+
+/* ──────────── MODAL ──────────── */
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.54);backdrop-filter:blur(7px);z-index:50;opacity:0;pointer-events:none;transition:var(--tr)}
+.mask.show{opacity:1;pointer-events:auto}
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-46%) scale(.96);opacity:0;pointer-events:none;width:min(720px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow-y:auto;background:rgba(8,17,32,.97);border:1px solid var(--line2);border-radius:28px;box-shadow:var(--shadow);z-index:70;transition:var(--tr)}
+.modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.modal-hd{padding:22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.modal-hd h3{font-family:'Syne',sans-serif;font-weight:900;font-size:1.2rem;letter-spacing:-0.03em;margin:0}
+.modal-bd{padding:22px}
+.modal-ft{padding:16px 22px 22px;display:flex;justify-content:flex-end;gap:10px}
+
+/* ──────────── TOAST ──────────── */
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(30px);opacity:0;pointer-events:none;background:rgba(7,17,30,.96);border:1px solid var(--line2);border-radius:16px;box-shadow:0 16px 44px rgba(0,0,0,.5);padding:13px 18px;z-index:100;display:flex;align-items:center;gap:11px;transition:var(--tr);min-width:260px}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast i{color:var(--green)}
+
+/* ──────────── PROFILE BANNER ──────────── */
+.profile-banner{display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;padding:26px;background:radial-gradient(circle at 20% 12%,rgba(33,212,253,.18),transparent 28rem),linear-gradient(135deg,rgba(33,212,253,.08),rgba(168,85,247,.1));border-bottom:1px solid var(--line)}
+.profile-banner h2{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:900;letter-spacing:-0.05em;margin:0 0 8px}
+.profile-banner p{margin:0;color:var(--muted)}
+.big-avatar{width:90px;height:90px;border-radius:28px;background:linear-gradient(135deg,var(--cyan),var(--violet));display:grid;place-items:center;font-family:'Syne',sans-serif;font-weight:900;font-size:2.2rem;border:3px solid rgba(255,255,255,.22);box-shadow:0 18px 50px rgba(0,0,0,.28)}
+
+/* ──────────── CONTRACT CARDS ──────────── */
+.contract-card{padding:20px;transition:var(--tr)}
+.contract-card:hover{transform:translateY(-4px);border-color:rgba(33,212,253,.28)}
+.contract-head{display:flex;justify-content:space-between;gap:14px;margin-bottom:18px}
+.contract-head h3{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:-0.02em;margin:0 0 5px}
+.contract-head p{margin:0;color:var(--muted);font-size:.84rem}
+.rate-big{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:950;letter-spacing:-0.05em}
+.meta-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:14px}
+.meta{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:14px;padding:11px}
+.meta span{display:block;color:var(--muted2);font-size:.7rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+.meta strong{display:block;margin-top:4px;font-size:.9rem}
+
+/* ──────────── CALENDAR ──────────── */
+.cal{padding:0 18px 18px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.day-name{color:var(--muted2);text-transform:uppercase;letter-spacing:.09em;font-size:.68rem;font-weight:900;padding:0 8px 8px}
+.cal-day{min-height:88px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.04);padding:9px;transition:var(--tr);position:relative;cursor:pointer}
+.cal-day:hover{transform:translateY(-2px);border-color:rgba(33,212,253,.28)}
+.cal-day.muted{opacity:.35}
+.cal-day.holiday{background:linear-gradient(135deg,rgba(247,201,72,.14),rgba(255,92,122,.09));border-color:rgba(247,201,72,.22)}
+.cal-day.approved{background:linear-gradient(135deg,rgba(53,226,161,.12),rgba(33,212,253,.07));border-color:rgba(53,226,161,.2)}
+.cal-day.submitted{background:linear-gradient(135deg,rgba(33,212,253,.1),rgba(99,102,241,.08));border-color:rgba(33,212,253,.2)}
+.cal-day span{font-weight:900;font-size:.9rem}
+.cal-day small{display:block;color:var(--muted);margin-top:6px;font-size:.72rem;line-height:1.35}
+
+/* ──────────── WEEKS GRID ──────────── */
+.weeks-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;padding:0 18px 18px}
+.week-cell{border:1px solid var(--line);background:rgba(255,255,255,.046);border-radius:14px;padding:11px 9px;min-height:88px;transition:var(--tr);cursor:pointer}
+.week-cell:hover{transform:translateY(-2px);border-color:rgba(33,212,253,.32)}
+.week-cell strong{display:block;font-size:.85rem;font-family:'Syne',sans-serif;font-weight:800}
+.week-cell span{display:block;color:var(--muted);font-size:.72rem;margin-top:6px}
+.week-cell.approved{background:rgba(53,226,161,.09)}
+.week-cell.submitted{background:rgba(33,212,253,.09)}
+.week-cell.holiday{background:rgba(247,201,72,.09)}
+.week-cell.draft{background:rgba(255,255,255,.04)}
+
+/* ──────────── EXPORT ──────────── */
+.export-opt{padding:18px;border:1px solid var(--line);border-radius:22px;background:rgba(255,255,255,.05);display:flex;gap:14px;align-items:flex-start;transition:var(--tr);cursor:pointer}
+.export-opt:hover{transform:translateY(-3px);border-color:rgba(33,212,253,.3)}
+.export-icon{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(33,212,253,.18),rgba(168,85,247,.16));border:1px solid var(--line);flex-shrink:0}
+.export-opt h3{font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;margin:0 0 5px}
+.export-opt p{margin:0;color:var(--muted);font-size:.82rem;line-height:1.5}
+
+/* ──────────── NOTIFICATIONS ──────────── */
+.notif{display:flex;align-items:flex-start;gap:13px;padding:15px;border-bottom:1px solid var(--line);cursor:pointer;transition:var(--tr)}
+.notif:hover{background:rgba(255,255,255,.04)}
+.notif:last-child{border-bottom:0}
+.notif-icon{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;flex-shrink:0}
+.notif strong{display:block;margin-bottom:4px;font-size:.9rem}
+.notif p{margin:0;color:var(--muted);font-size:.83rem;line-height:1.45}
+.notif time{display:block;font-size:.74rem;color:var(--muted2);margin-top:5px}
+
+/* ──────────── MOBILE ──────────── */
+.mob-menu{display:none}
+.sidebar-mask{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:18;opacity:0;pointer-events:none;transition:var(--tr)}
+.sidebar-mask.show{opacity:1;pointer-events:auto}
+@media(max-width:1280px){.g5{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(2,1fr)}.weeks-grid{grid-template-columns:repeat(6,1fr)}}
+@media(max-width:980px){
+  #loginScreen{grid-template-columns:1fr;padding:20px}
+  .login-hero{min-height:500px}
+  .app-shell{grid-template-columns:1fr}
+  .sidebar{position:fixed;transform:translateX(-110%);transition:var(--tr);height:100vh}
+  .sidebar.show{transform:translateX(0)}
+  .mob-menu{display:grid}
+  .search-box{display:none}
+  .g3,.g2,.g4,.g5,.split{grid-template-columns:1fr}
+  .weeks-grid{grid-template-columns:repeat(4,1fr)}
+  .cal-grid{grid-template-columns:repeat(2,1fr)}
+  .day-name{display:none}
+  .form-grid{grid-template-columns:1fr}
+  .profile-banner{grid-template-columns:1fr}
+}
+@media(max-width:620px){.content{padding:16px}.topbar{padding:12px 16px}.weeks-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<section id="loginScreen">
+  <div class="login-hero">
+    <div class="brand"><div class="brand-mark"><i class="fa-solid fa-bolt fa-lg"></i></div>Chronexa</div>
+    <div>
+      <h1 class="hero-title">Your contracting life, <span>beautifully organised.</span></h1>
+      <p class="hero-copy">Track contracts, day rates, timesheets, holidays, earnings and PDF reports — all stored locally in your browser. No server, no subscription, no data leaving your device.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>56</strong><span>Week calendar</span></div>
+        <div class="hero-stat"><strong>100%</strong><span>Private — local storage</span></div>
+        <div class="hero-stat"><strong>Free</strong><span>Forever, self-hosted</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="login-card">
+    <h2>Welcome back</h2>
+    <p>All your data is stored in this browser. Nothing is sent to any server.</p>
+    <div class="role-tabs">
+      <button class="role-tab active" data-role="user"><i class="fa-solid fa-user"></i> My Console</button>
+      <button class="role-tab" data-role="admin"><i class="fa-solid fa-shield-halved"></i> Admin View</button>
+    </div>
+    <div class="field"><label>Name</label><div class="inp"><i class="fa-regular fa-user"></i><input id="loginName" value="Vidya Reddy"/></div></div>
+    <div class="field"><label>Password (optional)</label><div class="inp"><i class="fa-solid fa-lock"></i><input type="password" placeholder="No backend — for show only"/></div></div>
+    <button class="btn primary full" id="loginBtn"><i class="fa-solid fa-arrow-right-to-bracket"></i> Enter Workspace</button>
+    <p class="mini-note"><i class="fa-solid fa-database"></i> All data saved to localStorage — persists between sessions on this device</p>
+  </div>
+</section>
+
+<!-- APP -->
+<section id="appShell" class="app-shell hidden">
+  <div id="sidebarMask" class="sidebar-mask"></div>
+  <aside id="sidebar" class="sidebar">
+    <div class="brand"><div class="brand-mark"><i class="fa-solid fa-bolt"></i></div>Chronexa</div>
+    <div class="profile-mini">
+      <div class="avatar" id="sidebarAvatar">VR</div>
+      <div><strong id="sidebarName">Vidya Reddy</strong><span id="sidebarRole">Contractor</span></div>
+    </div>
+    <div class="nav-label">Workspace</div>
+    <button class="nav-item active" data-view="dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+    <button class="nav-item" data-view="profile"><i class="fa-solid fa-id-card"></i> My Profile</button>
+    <button class="nav-item" data-view="contracts"><i class="fa-solid fa-file-signature"></i> Contracts</button>
+    <button class="nav-item" data-view="projects"><i class="fa-solid fa-diagram-project"></i> Projects</button>
+    <button class="nav-item" data-view="timesheets"><i class="fa-solid fa-calendar-check"></i> Timesheets</button>
+    <button class="nav-item" data-view="holidays"><i class="fa-solid fa-umbrella-beach"></i> Holidays</button>
+    <button class="nav-item" data-view="exports"><i class="fa-solid fa-file-pdf"></i> PDF Export</button>
+    <div class="nav-label admin-only">Admin</div>
+    <button class="nav-item admin-only" data-view="admin"><i class="fa-solid fa-shield-halved"></i> Admin Console</button>
+    <button class="nav-item admin-only" data-view="rates"><i class="fa-solid fa-sterling-sign"></i> Rate Management</button>
+    <button class="nav-item admin-only" data-view="reports"><i class="fa-solid fa-chart-line"></i> Analytics</button>
+    <div class="nav-label">System</div>
+    <button class="nav-item" data-view="notifications"><i class="fa-solid fa-bell"></i> Notifications <span class="badge-dot" id="notifDot"></span></button>
+    <button class="nav-item" data-view="settings"><i class="fa-solid fa-sliders"></i> Settings</button>
+    <button class="nav-item" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button id="mobMenuBtn" class="icon-btn mob-menu"><i class="fa-solid fa-bars"></i></button>
+      <div class="page-title"><h1 id="pageTitle">Dashboard</h1><p id="pageSub">Overview of your contracting activity</p></div>
+      <div class="top-actions">
+        <div class="inp search-box"><i class="fa-solid fa-magnifying-glass"></i><input id="globalSearch" placeholder="Search..."/></div>
+        <button class="icon-btn" id="notifBtn"><i class="fa-regular fa-bell"></i><span class="red-dot" id="notifBadge"></span></button>
+        <button class="btn primary" id="quickAddBtn"><i class="fa-solid fa-plus"></i> New Entry</button>
+      </div>
+    </header>
+
+    <div class="content" id="mainContent">
+
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="view active">
+        <div class="grid mb20" style="grid-template-columns:1.35fr .65fr">
+          <div class="card" style="padding:28px;min-height:240px;background:linear-gradient(135deg,rgba(33,212,253,.15),rgba(109,93,252,.13) 55%,rgba(236,72,153,.1)),var(--panel)">
+            <span class="badge blue mb16"><i class="fa-solid fa-sparkles"></i> Personal workspace</span>
+            <h2 style="font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,3.6rem);line-height:.95;letter-spacing:-0.07em;font-weight:900;margin:12px 0 16px">One cockpit for all your contracting work.</h2>
+            <p style="color:#c5d4eb;max-width:700px;line-height:1.75">Track contracts, log hours, mark holidays, and export professional PDFs. All data saved locally — private and free.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:24px">
+              <button class="btn primary" onclick="go('timesheets')"><i class="fa-solid fa-pen-to-square"></i> Log Timesheet</button>
+              <button class="btn" onclick="go('exports')"><i class="fa-solid fa-file-export"></i> Export PDF</button>
+              <button class="btn ghost" onclick="openModal('contract')"><i class="fa-solid fa-plus"></i> New Contract</button>
+            </div>
+          </div>
+          <div class="card pad">
+            <div style="width:80px;height:80px;border-radius:50%;margin:0 auto 16px;background:radial-gradient(circle at 30% 30%,#fff,var(--cyan) 26%,var(--blue) 56%,var(--violet));box-shadow:0 0 44px rgba(33,212,253,.35);animation:pulse 3s ease-in-out infinite"></div>
+            <div style="text-align:center;margin-bottom:14px"><strong style="font-size:.95rem">Smart insights</strong><p style="color:var(--muted);font-size:.82rem;margin-top:4px">From your stored data</p></div>
+            <div id="insightList" style="display:grid;gap:8px"></div>
+          </div>
+        </div>
+        @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+        <div class="grid g5 mb20" id="kpiGrid"></div>
+        <div class="split mb20">
+          <div class="card"><div class="card-hd"><div><h3>Earnings trend</h3><p>Monthly billable value</p></div><span class="badge green" id="earningsTrend">Loading...</span></div><div style="padding:0 22px 22px"><canvas id="earningsChart" height="130"></canvas></div></div>
+          <div class="card"><div class="card-hd"><div><h3>Timesheet status</h3><p>Approval pipeline</p></div><button class="btn sm" onclick="go('timesheets')">View all</button></div><div style="padding:0 22px 22px"><canvas id="statusChart" height="130"></canvas></div></div>
+        </div>
+        <div class="card"><div class="card-hd"><div><h3>Recent activity</h3><p>Latest timesheets and contracts</p></div><button class="btn sm" onclick="go('notifications')"><i class="fa-regular fa-bell"></i> Notifications</button></div><div class="tbl-wrap"><table id="activityTable"></table></div></div>
+      </section>
+
+      <!-- PROFILE -->
+      <section id="profile" class="view">
+        <div class="card mb20">
+          <div class="profile-banner">
+            <div class="big-avatar" id="profileAvatar">VR</div>
+            <div><h2 id="profileName">Vidya Reddy</h2><p id="profileRole">Senior Contractor</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><span class="badge blue">Verified</span><span class="badge green">Active</span><span class="badge violet">IR35 tracked</span></div></div>
+            <button class="btn primary" onclick="openModal('profile')"><i class="fa-solid fa-user-pen"></i> Edit Profile</button>
+          </div>
+          <div class="grid g3" style="padding:22px" id="profileMeta"></div>
+        </div>
+        <div class="split">
+          <div class="card pad"><h3 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:18px">Bank & Payment Details</h3><div class="form-grid" id="bankFields"></div><button class="btn primary" style="margin-top:14px" onclick="saveBank()"><i class="fa-solid fa-save"></i> Save</button></div>
+          <div class="card pad"><h3 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:18px">Skills & Certifications</h3><div id="skillsList"></div><button class="btn sm" style="margin-top:14px" onclick="openModal('skill')"><i class="fa-solid fa-plus"></i> Add Skill</button></div>
+        </div>
+      </section>
+
+      <!-- CONTRACTS -->
+      <section id="contracts" class="view">
+        <div class="toolbar"><div><h2>Contracts</h2><p>Manage all client contracts and day rates</p></div><div class="toolbar-actions"><button class="btn primary" onclick="openModal('contract')"><i class="fa-solid fa-plus"></i> Add Contract</button></div></div>
+        <div class="grid g3 mb20" id="contractsGrid"></div>
+        <div class="card"><div class="card-hd"><div><h3>Contract Register</h3><p>All contracts with full detail</p></div></div><div class="tbl-wrap"><table id="contractsTable"></table></div></div>
+      </section>
+
+      <!-- PROJECTS -->
+      <section id="projects" class="view">
+        <div class="toolbar"><div><h2>Projects</h2><p>Delivery streams and project utilisation</p></div><div class="toolbar-actions"><button class="btn primary" onclick="openModal('project')"><i class="fa-solid fa-plus"></i> Add Project</button></div></div>
+        <div class="grid g4 mb20" id="projectsGrid"></div>
+        <div class="card"><div class="card-hd"><div><h3>Project Board</h3><p>Health and utilisation tracking</p></div></div><div class="tbl-wrap"><table id="projectsTable"></table></div></div>
+      </section>
+
+      <!-- TIMESHEETS -->
+      <section id="timesheets" class="view">
+        <div class="toolbar"><div><h2>Timesheets</h2><p>Weekly, monthly and 56-week yearly reporting</p></div><div class="toolbar-actions"><button class="btn" onclick="openModal('holiday')"><i class="fa-solid fa-umbrella-beach"></i> Mark Holiday</button><button class="btn primary" onclick="openModal('timesheet')"><i class="fa-solid fa-plus"></i> New Entry</button></div></div>
+        <div class="card pad mb20"><div class="tabs" id="tsTabs"><button class="tab active" data-tab="weekly">Weekly</button><button class="tab" data-tab="monthly">Monthly</button><button class="tab" data-tab="yearly">Yearly / 56 Weeks</button></div></div>
+        <div id="weeklyPanel"><div class="card"><div class="card-hd"><div><h3 id="weekLabel">Current Week</h3><p id="weekProject">—</p></div><div style="display:flex;gap:8px;align-items:center"><span class="badge amber" id="weekStatus">Draft</span><button class="btn sm success" onclick="submitCurrentWeek()"><i class="fa-solid fa-paper-plane"></i> Submit</button></div></div><div class="tbl-wrap"><table id="weeklyTable"></table></div><div style="padding:14px 22px;display:flex;align-items:center;justify-content:space-between"><span style="color:var(--muted);font-size:.86rem">Total:</span><strong id="weekTotal" style="font-family:'Syne',sans-serif;font-size:1.2rem;letter-spacing:-0.04em">£0</strong></div></div></div>
+        <div id="monthlyPanel" class="hidden"><div class="card"><div class="card-hd"><div><h3>Monthly Calendar</h3><p>April 2026</p></div><button class="btn primary sm" onclick="exportPdf('Monthly')"><i class="fa-solid fa-file-pdf"></i> Export</button></div><div class="cal" id="monthlyCalendar"></div></div></div>
+        <div id="yearlyPanel" class="hidden"><div class="card"><div class="card-hd"><div><h3>56-Week Summary</h3><p>Full year billing and approval overview</p></div><button class="btn primary sm" onclick="exportPdf('Yearly')"><i class="fa-solid fa-file-pdf"></i> Export Year</button></div><div class="weeks-grid" id="weeksGrid"></div></div></div>
+      </section>
+
+      <!-- HOLIDAYS -->
+      <section id="holidays" class="view">
+        <div class="toolbar"><div><h2>Holiday & Leave</h2><p>Annual leave, bank holidays, sick days</p></div><div class="toolbar-actions"><button class="btn primary" onclick="openModal('holiday')"><i class="fa-solid fa-plus"></i> Add Leave</button></div></div>
+        <div class="grid g4 mb20" id="holidayKpis"></div>
+        <div class="card"><div class="card-hd"><div><h3>Leave Calendar</h3><p>Integrated with timesheet totals</p></div></div><div class="cal" id="holidayCalendar"></div></div>
+        <div class="card" style="margin-top:16px"><div class="card-hd"><div><h3>Leave Register</h3><p>All recorded leave days</p></div></div><div class="tbl-wrap"><table id="leaveTable"></table></div></div>
+      </section>
+
+      <!-- EXPORTS -->
+      <section id="exports" class="view">
+        <div class="toolbar"><div><h2>PDF Export Centre</h2><p>Generate professional timesheet reports</p></div></div>
+        <div class="grid mb20" style="grid-template-columns:.85fr 1.15fr">
+          <div class="card pad">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:18px">Export Options</h3>
+            <div class="field"><label>Report Type</label><div class="inp"><select id="reportType"><option>Weekly Timesheet</option><option>Monthly Timesheet</option><option>Yearly 56-Week Summary</option><option>Contract Report</option></select></div></div>
+            <div class="field"><label>Contract / Project</label><div class="inp"><select id="exportContract"><option>All Contracts</option></select></div></div>
+            <div class="field"><label>Period</label><div class="inp"><input id="exportPeriod" value="Week 18 / April 2026"/></div></div>
+            <div class="field"><label>Include</label><div class="inp"><select><option>Full detail + summary</option><option>Summary only</option><option>Client invoice pack</option></select></div></div>
+            <button class="btn primary full" onclick="exportPdf(document.getElementById('reportType').value)"><i class="fa-solid fa-file-pdf"></i> Generate PDF</button>
+          </div>
+          <div class="grid g2">
+            <div class="export-opt" onclick="exportPdf('Weekly')"><div class="export-icon"><i class="fa-solid fa-calendar-week fa-lg"></i></div><div><h3>Weekly PDF</h3><p>Day-by-day timesheet with notes and approval footer</p><button class="btn sm" style="margin-top:10px">Export</button></div></div>
+            <div class="export-opt" onclick="exportPdf('Monthly')"><div class="export-icon"><i class="fa-solid fa-calendar-days fa-lg"></i></div><div><h3>Monthly PDF</h3><p>Combined weeks, holidays and earnings summary</p><button class="btn sm" style="margin-top:10px">Export</button></div></div>
+            <div class="export-opt" onclick="exportPdf('Yearly')"><div class="export-icon"><i class="fa-solid fa-calendar fa-lg"></i></div><div><h3>Yearly PDF</h3><p>Full 56-week breakdown with status and earnings</p><button class="btn sm" style="margin-top:10px">Export</button></div></div>
+            <div class="export-opt" onclick="exportPdf('Contract')"><div class="export-icon"><i class="fa-solid fa-file-contract fa-lg"></i></div><div><h3>Contract PDF</h3><p>Project and contract-wise reporting for clients</p><button class="btn sm" style="margin-top:10px">Export</button></div></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-hd"><div><h3>Export History</h3><p>Recent PDF exports</p></div></div><div class="tbl-wrap"><table id="exportHistTable"></table></div></div>
+      </section>
+
+      <!-- ADMIN -->
+      <section id="admin" class="view">
+        <div class="toolbar"><div><h2>Admin Console</h2><p>Approve timesheets and manage system settings</p></div></div>
+        <div class="grid g4 mb20" id="adminKpis"></div>
+        <div class="card mb20"><div class="card-hd"><div><h3>Approval Queue</h3><p>Timesheets awaiting your approval</p></div></div><div class="tbl-wrap"><table id="approvalTable"></table></div></div>
+        <div class="card"><div class="card-hd"><div><h3>System Log</h3><p>Recent actions</p></div></div><div id="sysLog" style="padding:0 0 4px"></div></div>
+      </section>
+
+      <!-- RATES -->
+      <section id="rates" class="view">
+        <div class="toolbar"><div><h2>Rate Management</h2><p>Day rates per contract and date period</p></div><div class="toolbar-actions"><button class="btn primary" onclick="openModal('rate')"><i class="fa-solid fa-plus"></i> Add Rate</button></div></div>
+        <div class="card"><div class="card-hd"><div><h3>Rate Register</h3><p>Effective-dated rate configuration</p></div></div><div class="tbl-wrap"><table id="ratesTable"></table></div></div>
+      </section>
+
+      <!-- REPORTS -->
+      <section id="reports" class="view">
+        <div class="toolbar"><div><h2>Reports & Analytics</h2><p>Revenue, utilisation and earnings trends</p></div></div>
+        <div class="split mb20">
+          <div class="card"><div class="card-hd"><div><h3>Revenue by Contract</h3><p>Approved billable value</p></div></div><div style="padding:0 22px 22px"><canvas id="revenueChart" height="150"></canvas></div></div>
+          <div class="card"><div class="card-hd"><div><h3>Utilisation mix</h3><p>Billable vs leave vs admin</p></div></div><div style="padding:0 22px 22px"><canvas id="utilChart" height="150"></canvas></div></div>
+        </div>
+        <div class="card"><div class="card-hd"><div><h3>Earnings Summary</h3><p>Year to date by contract</p></div></div><div class="tbl-wrap"><table id="earningsSummTable"></table></div></div>
+      </section>
+
+      <!-- NOTIFICATIONS -->
+      <section id="notifications" class="view">
+        <div class="toolbar"><div><h2>Notifications</h2><p>Alerts, approvals and reminders</p></div><div class="toolbar-actions"><button class="btn sm" onclick="markAllRead()"><i class="fa-solid fa-check-double"></i> Mark all read</button></div></div>
+        <div class="card" id="notifList"></div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section id="settings" class="view">
+        <div class="toolbar"><div><h2>Settings</h2><p>Preferences and data management</p></div></div>
+        <div class="split">
+          <div class="card pad">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:18px">App Preferences</h3>
+            <div class="field"><label>Your Name</label><div class="inp"><input id="settName"/></div></div>
+            <div class="field"><label>Job Title</label><div class="inp"><input id="settTitle"/></div></div>
+            <div class="field"><label>Company / Ltd Name</label><div class="inp"><input id="settCompany"/></div></div>
+            <div class="field"><label>Default Day Rate (£)</label><div class="inp"><input id="settRate" type="number"/></div></div>
+            <div class="field"><label>Currency</label><div class="inp"><select id="settCurrency"><option value="GBP">GBP — £</option><option value="USD">USD — $</option><option value="EUR">EUR — €</option></select></div></div>
+            <button class="btn primary" onclick="saveSettings()"><i class="fa-solid fa-save"></i> Save Settings</button>
+          </div>
+          <div class="card pad">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:18px">Data Management</h3>
+            <div class="field-inline"><div><strong>Export all data</strong><p style="color:var(--muted);font-size:.82rem">Download full JSON backup</p></div><button class="btn sm" onclick="exportData()"><i class="fa-solid fa-download"></i> Export</button></div>
+            <div class="field-inline"><div><strong>Import data</strong><p style="color:var(--muted);font-size:.82rem">Restore from backup JSON</p></div><button class="btn sm" onclick="importData()"><i class="fa-solid fa-upload"></i> Import</button></div>
+            <div class="field-inline"><div><strong>Storage used</strong><p style="color:var(--muted);font-size:.82rem" id="storageUsed">Calculating...</p></div><span class="badge green">localStorage</span></div>
+            <div class="field-inline" style="margin-top:8px"><div><strong style="color:var(--red)">Clear all data</strong><p style="color:var(--muted);font-size:.82rem">Wipe everything and start fresh</p></div><button class="btn danger sm" onclick="clearAllData()"><i class="fa-solid fa-trash"></i> Clear</button></div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /content -->
+  </main>
+</section>
+
+<!-- MODAL -->
+<div id="modalMask" class="mask"></div>
+<div id="appModal" class="modal">
+  <div class="modal-hd"><h3 id="modalTitle">Add Item</h3><button class="icon-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button></div>
+  <div class="modal-bd" id="modalBody"></div>
+  <div class="modal-ft"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="saveModal()"><i class="fa-solid fa-check"></i> Save</button></div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"><i class="fa-solid fa-circle-check"></i><span id="toastMsg">Done</span></div>
+
+<script>
+// ═══════════════════════════════════════════
+// STORAGE LAYER — everything persists to localStorage
+// ═══════════════════════════════════════════
+const STORE_KEY = 'chronexa_v2';
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return null;
+}
+
+function saveState() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+
+// Default seed data
+const defaultState = {
+  user: { name:'Vidya Reddy', title:'Senior Data Architect', company:'VR Data Consulting Ltd', email:'vidya.reddy@example.com', phone:'+44 7700 900123', location:'Gloucestershire, UK', vat:'GB 123 4567 89', payment:'14 days', defaultRate:675, currency:'GBP' },
+  bank: { bankName:'HSBC Business', accountName:'VR Data Consulting Ltd', sortCode:'40-12-34', accountNumber:'12345678', bic:'MIDLGB22' },
+  skills: ['Azure Databricks', 'Palantir Foundry', 'Apache Spark', 'dbt', 'Python', 'Scala', 'SQL', 'Enterprise Integration'],
+  contracts: [
+    { id:'C001', name:'Frontier EDP Integration', client:'Frontier Agriculture', project:'Enterprise Data Platform', start:'2026-01-01', end:'2026-12-31', rate:675, status:'Active', progress:82, notes:'Main engagement - Azure Databricks medallion build' },
+    { id:'C002', name:'Navara Finance Workshop', client:'Navara Oat Milling', project:'Finance Process Discovery', start:'2026-03-20', end:'2026-06-30', rate:725, status:'Active', progress:46, notes:'Agile discovery workshops' },
+    { id:'C003', name:'Foundry AIP Monitoring', client:'Healthcare Analytics CoE', project:'AIP Agents & Ontology', start:'2026-02-15', end:'2026-09-30', rate:700, status:'Review', progress:62, notes:'Palantir AIP build' },
+  ],
+  projects: [
+    { id:'P001', code:'EDP-001', name:'Azure Databricks Medallion', client:'Frontier Agriculture', contractId:'C001', rate:675, status:'On Track', utilisation:87, notes:'' },
+    { id:'P002', code:'FIN-240', name:'Finance Project Workshop', client:'Navara', contractId:'C002', rate:725, status:'Discovery', utilisation:64, notes:'' },
+    { id:'P003', code:'AIP-009', name:'Palantir AIP Monitoring', client:'Healthcare CoE', contractId:'C003', rate:700, status:'At Risk', utilisation:72, notes:'' },
+  ],
+  timesheets: [
+    { id:'TS001', week:'2026-W15', contractId:'C001', days:5, hours:37.5, status:'Approved', notes:'Sprint 8 delivery', earnings:3375, date:'2026-04-11' },
+    { id:'TS002', week:'2026-W16', contractId:'C001', days:5, hours:40, status:'Approved', notes:'Stakeholder demos', earnings:3375, date:'2026-04-18' },
+    { id:'TS003', week:'2026-W17', contractId:'C001', days:4.5, hours:36, status:'Submitted', notes:'Schema review', earnings:3037.5, date:'2026-04-25' },
+    { id:'TS004', week:'2026-W18', contractId:'C001', days:4, hours:32, status:'Draft', notes:'', earnings:2700, date:'2026-05-02' },
+    { id:'TS005', week:'2026-W16', contractId:'C002', days:1, hours:8, status:'Approved', notes:'Initial workshop', earnings:725, date:'2026-04-18' },
+  ],
+  holidays: [
+    { id:'H001', start:'2026-05-26', end:'2026-05-26', type:'Bank Holiday', impact:'Non-billable', notes:'Spring Bank Holiday' },
+    { id:'H002', start:'2026-04-10', end:'2026-04-14', type:'Annual Leave', impact:'Non-billable', notes:'Easter break' },
+  ],
+  rates: [
+    { id:'R001', contractId:'C001', rate:675, from:'2026-01-01', to:'2026-06-30', status:'Active' },
+    { id:'R002', contractId:'C002', rate:725, from:'2026-03-20', to:'2026-06-30', status:'Active' },
+    { id:'R003', contractId:'C003', rate:700, from:'2026-02-15', to:'2026-09-30', status:'Active' },
+  ],
+  notifications: [
+    { id:'N001', title:'Timesheet submitted', body:'TS003 for Week 17 is awaiting admin approval.', icon:'fa-calendar-check', color:'rgba(33,212,253,.15)', read:false, time:'2h ago' },
+    { id:'N002', title:'Contract rate change', body:'Navara contract rate increases to £725/day from June.', icon:'fa-sterling-sign', color:'rgba(247,201,72,.15)', read:false, time:'Yesterday' },
+    { id:'N003', title:'Holiday conflict detected', body:'26 May is a bank holiday with a draft timesheet entry.', icon:'fa-triangle-exclamation', color:'rgba(255,92,122,.15)', read:true, time:'2 days ago' },
+  ],
+  exportHistory: [],
+  sysLog: [
+    { msg:'TS002 approved for Week 16', time:'28 Apr 2026 14:21' },
+    { msg:'Contract C002 rate updated', time:'27 Apr 2026 11:05' },
+    { msg:'Profile updated', time:'26 Apr 2026 17:44' },
+  ],
+  role: 'user',
+};
+
+// Load or init state
+let state = loadState() || JSON.parse(JSON.stringify(defaultState));
+
+// ═══════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const qs = (sel, root=document) => root.querySelector(sel);
+const qsa = (sel, root=document) => [...root.querySelectorAll(sel)];
+
+function fmt(v) {
+  const sym = state.user.currency === 'USD' ? '$' : state.user.currency === 'EUR' ? '€' : '£';
+  return sym + Number(v||0).toLocaleString('en-GB', {minimumFractionDigits:0, maximumFractionDigits:0});
+}
+
+function badge(status) {
+  const s = String(status).toLowerCase();
+  const cls = (s.includes('active')||s.includes('approved')||s.includes('track')||s.includes('success')) ? 'green'
+    : (s.includes('submitted')||s.includes('review')||s.includes('discovery')||s.includes('planning')||s.includes('future')) ? 'amber'
+    : (s.includes('risk')||s.includes('reject')||s.includes('expired')) ? 'red'
+    : (s.includes('draft')) ? 'gray'
+    : 'blue';
+  return `<span class="badge ${cls}">${status}</span>`;
+}
+
+function tbl(headers, rows, noData='No records yet') {
+  if (!rows.length) return `<p style="padding:20px;color:var(--muted);text-align:center">${noData}</p>`;
+  return `<table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+function uid() { return 'id_' + Math.random().toString(36).slice(2,10); }
+
+function contractName(id) {
+  const c = state.contracts.find(x=>x.id===id);
+  return c ? c.name : id;
+}
+
+function contractRate(id) {
+  const c = state.contracts.find(x=>x.id===id);
+  return c ? c.rate : state.user.defaultRate;
+}
+
+function toast(msg, type='') {
+  const el = $('toast');
+  $('toastMsg').textContent = msg;
+  el.querySelector('i').className = type === 'error' ? 'fa-solid fa-circle-xmark' : 'fa-solid fa-circle-check';
+  el.style.borderColor = type === 'error' ? 'rgba(255,92,122,.4)' : '';
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+function logSys(msg) {
+  state.sysLog.unshift({ msg, time: new Date().toLocaleString('en-GB') });
+  if (state.sysLog.length > 50) state.sysLog.pop();
+  saveState();
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+const pageMeta = {
+  dashboard:['Dashboard','Overview of your contracting activity'],
+  profile:['My Profile','Personal, payment and skill information'],
+  contracts:['Contracts','Client contracts, day rates and documents'],
+  projects:['Projects','Delivery streams and utilisation'],
+  timesheets:['Timesheets','Log hours, submit and track approvals'],
+  holidays:['Holidays','Annual leave, bank holidays and sick days'],
+  exports:['PDF Export','Professional timesheet reports for clients'],
+  admin:['Admin Console','Approval queue and system management'],
+  rates:['Rate Management','Day rates by contract and period'],
+  reports:['Reports & Analytics','Revenue, utilisation and trends'],
+  notifications:['Notifications','Alerts and action items'],
+  settings:['Settings','Preferences and data management'],
+};
+
+function go(view) {
+  qsa('.view').forEach(v=>v.classList.remove('active'));
+  const el = $(view);
+  if (el) el.classList.add('active');
+  qsa('.nav-item[data-view]').forEach(n=>n.classList.toggle('active', n.dataset.view===view));
+  const [t,s] = pageMeta[view] || [view,''];
+  $('pageTitle').textContent = t;
+  $('pageSub').textContent = s;
+  toggleSidebar(false);
+  renderView(view);
+}
+
+function renderView(view) {
+  const fn = renders[view];
+  if (fn) fn();
+}
+
+// ═══════════════════════════════════════════
+// RENDER FUNCTIONS
+// ═══════════════════════════════════════════
+const renders = {};
+
+renders.dashboard = function() {
+  // KPIs
+  const totalEarnings = state.timesheets.filter(t=>t.status==='Approved').reduce((s,t)=>s+t.earnings,0);
+  const pendingTS = state.timesheets.filter(t=>t.status==='Submitted').length;
+  const activeContracts = state.contracts.filter(c=>c.status==='Active').length;
+  const holidayBalance = 25 - state.holidays.filter(h=>h.type==='Annual Leave').length;
+
+  $('kpiGrid').innerHTML = [
+    {label:'YTD Earnings',value:fmt(totalEarnings),trend:'+14.8%',trendCls:'up',icon:'fa-sterling-sign'},
+    {label:'Active Contracts',value:activeContracts,trend:`${activeContracts} live`,trendCls:'up',icon:'fa-file-signature'},
+    {label:'Pending Approval',value:pendingTS,trend:pendingTS?'Action needed':'All clear',trendCls:pendingTS?'warn':'up',icon:'fa-calendar-check'},
+    {label:'Holiday Balance',value:holidayBalance+' days',trend:'of 25 total',trendCls:'warn',icon:'fa-umbrella-beach'},
+    {label:'Projects',value:state.projects.length,trend:'active',trendCls:'up',icon:'fa-diagram-project'},
+  ].map(k=>`<div class="card kpi"><div class="kpi-top"><div class="kpi-icon"><i class="fa-solid ${k.icon}"></i></div><span class="trend ${k.trendCls}">${k.trend}</span></div><div><div class="kpi-value">${k.value}</div><div class="kpi-label">${k.label}</div></div></div>`).join('');
+
+  // Insights
+  const insights = [];
+  if (pendingTS) insights.push(`<strong>${pendingTS} timesheet${pendingTS>1?'s':''} pending:</strong> awaiting admin approval.`);
+  const soonExpiring = state.contracts.filter(c=>{const d=new Date(c.end);const now=new Date();return(d-now)/(1000*60*60*24)<90&&d>now});
+  if (soonExpiring.length) insights.push(`<strong>Contract expiry:</strong> ${soonExpiring[0].name} ends ${soonExpiring[0].end}.`);
+  insights.push(`<strong>Total YTD:</strong> ${fmt(totalEarnings)} across ${state.timesheets.filter(t=>t.status==='Approved').length} approved sheets.`);
+  $('insightList').innerHTML = insights.map(i=>`<div style="border:1px solid var(--line);background:rgba(255,255,255,.06);padding:11px;border-radius:14px;color:#c8d8ee;font-size:.83rem;line-height:1.5">${i}</div>`).join('');
+
+  // Earnings trend badge
+  $('earningsTrend').textContent = '+14.8%';
+
+  // Activity table
+  const recentTS = [...state.timesheets].sort((a,b)=>b.id.localeCompare(a.id)).slice(0,6);
+  $('activityTable').innerHTML = tbl(['ID','Contract','Week','Days','Earnings','Status'],[
+    ...recentTS.map(t=>[t.id, contractName(t.contractId), t.week, t.days+'d', fmt(t.earnings), badge(t.status)]),
+    ...state.contracts.slice(0,2).map(c=>[c.id, c.name, 'Contract', '—', fmt(c.rate)+'/day', badge(c.status)])
+  ]);
+
+  renderCharts();
+};
+
+function renderCharts() {
+  // Destroy old charts
+  ['earningsChart','statusChart'].forEach(id=>{
+    const c = Chart.getChart(id);
+    if (c) c.destroy();
+  });
+
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const monthlyData = Array(12).fill(0);
+  state.timesheets.filter(t=>t.status==='Approved').forEach(t=>{
+    const d = new Date(t.date);
+    if (!isNaN(d)) monthlyData[d.getMonth()] += t.earnings;
+  });
+
+  new Chart($('earningsChart'), {
+    type:'bar',
+    data:{ labels:months, datasets:[{label:'Approved',data:monthlyData,backgroundColor:'rgba(33,212,253,.7)',borderRadius:6},{label:'Pending',data:months.map(()=>Math.round(Math.random()*800)),backgroundColor:'rgba(168,85,247,.4)',borderRadius:6}]},
+    options:{ responsive:true, plugins:{legend:{labels:{color:'#9fb2ce',font:{family:'DM Sans',size:11}}}}, scales:{ x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#9fb2ce',font:{family:'DM Sans'}}}, y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#9fb2ce',font:{family:'DM Sans'},callback:v=>fmt(v)}} }}
+  });
+
+  const statusCounts = {Approved:0,Submitted:0,Draft:0,Rejected:0};
+  state.timesheets.forEach(t=>{ if(statusCounts[t.status]!==undefined) statusCounts[t.status]++; });
+  new Chart($('statusChart'), {
+    type:'doughnut',
+    data:{labels:Object.keys(statusCounts),datasets:[{data:Object.values(statusCounts),backgroundColor:['#35e2a1','#21d4fd','#f7c948','#ff5c7a'],borderColor:'rgba(255,255,255,.1)'}]},
+    options:{responsive:true,cutout:'70%',plugins:{legend:{labels:{color:'#9fb2ce',font:{family:'DM Sans',size:11},usePointStyle:true}}}}
+  });
+}
+
+renders.profile = function() {
+  const u = state.user;
+  $('profileAvatar').textContent = getInitials(u.name);
+  $('profileName').textContent = u.name;
+  $('profileRole').textContent = u.title;
+  $('sidebarName').textContent = u.name;
+  $('sidebarAvatar').textContent = getInitials(u.name);
+  $('topbarAv') && ($('topbarAv').textContent = getInitials(u.name));
+
+  $('profileMeta').innerHTML = [
+    ['Email',u.email],['Phone',u.phone],['Location',u.location],
+    ['Company',u.company],['VAT Number',u.vat],['Payment Terms',u.payment]
+  ].map(([k,v])=>`<div class="meta"><span>${k}</span><strong>${v||'—'}</strong></div>`).join('');
+
+  const b = state.bank;
+  $('bankFields').innerHTML = [
+    ['Bank Name','bankName','text'],['Account Name','accountName','text'],
+    ['Sort Code','sortCode','text'],['Account Number','accountNumber','text'],['BIC/SWIFT','bic','text']
+  ].map(([label,key,type])=>`<div class="field"><label>${label}</label><div class="inp"><input type="${type}" id="bank_${key}" value="${b[key]||''}"/></div></div>`).join('');
+
+  $('skillsList').innerHTML = state.skills.map((s,i)=>
+    `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span class="badge blue">${s}</span><button class="btn ghost sm" onclick="removeSkill(${i})"><i class="fa-solid fa-trash" style="color:var(--red)"></i></button></div>`
+  ).join('') || '<p style="color:var(--muted)">No skills added yet</p>';
+};
+
+renders.contracts = function() {
+  $('contractsGrid').innerHTML = state.contracts.map(c=>`
+    <div class="card contract-card">
+      <div class="contract-head"><div><h3>${c.name}</h3><p>${c.client}</p></div>${badge(c.status)}</div>
+      <div class="rate-big">${fmt(c.rate)}<span style="font-size:.82rem;color:var(--muted);font-weight:600"> / day</span></div>
+      <div class="prog" style="margin:14px 0"><span style="width:${c.progress}%"></span></div>
+      <div class="meta-grid">
+        <div class="meta"><span>Start</span><strong>${c.start}</strong></div>
+        <div class="meta"><span>End</span><strong>${c.end}</strong></div>
+        <div class="meta"><span>Progress</span><strong>${c.progress}%</strong></div>
+        <div class="meta"><span>Notes</span><strong style="font-size:.78rem;white-space:normal">${c.notes||'—'}</strong></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn sm" onclick="editContract('${c.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+        <button class="btn sm danger" onclick="deleteContract('${c.id}')"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>`).join('') || '<p style="color:var(--muted)">No contracts yet — add one!</p>';
+
+  $('contractsTable').innerHTML = tbl(
+    ['ID','Contract','Client','Start','End','Rate','Status',''],
+    state.contracts.map(c=>[c.id,c.name,c.client,c.start,c.end,fmt(c.rate)+'/day',badge(c.status),
+      `<button class="btn sm" onclick="editContract('${c.id}')">Edit</button>`
+    ])
+  );
+
+  // populate export contract select
+  const sel = $('exportContract');
+  if (sel) {
+    sel.innerHTML = '<option value="">All Contracts</option>' + state.contracts.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  }
+};
+
+renders.projects = function() {
+  $('projectsGrid').innerHTML = state.projects.map(p=>`
+    <div class="card contract-card">
+      <div class="contract-head"><div><h3>${p.name}</h3><p>${p.code} · ${p.client}</p></div>${badge(p.status)}</div>
+      <div class="rate-big">${fmt(p.rate)}<span style="font-size:.82rem;color:var(--muted);font-weight:600"> / day</span></div>
+      <div class="prog" style="margin:14px 0"><span style="width:${p.utilisation}%"></span></div>
+      <div style="display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted)"><span>Utilisation</span><strong>${p.utilisation}%</strong></div>
+      <div style="margin-top:12px;display:flex;gap:6px">
+        <button class="btn sm" onclick="editProject('${p.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+        <button class="btn sm danger" onclick="deleteProject('${p.id}')"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>`).join('') || '<p style="color:var(--muted)">No projects yet</p>';
+
+  $('projectsTable').innerHTML = tbl(
+    ['Code','Project','Client','Rate','Utilisation','Status',''],
+    state.projects.map(p=>[p.code,p.name,p.client,fmt(p.rate)+'/day',
+      `<div class="prog" style="min-width:80px"><span style="width:${p.utilisation}%"></span></div>`,
+      badge(p.status),`<button class="btn sm" onclick="editProject('${p.id}')">Edit</button>`
+    ])
+  );
+};
+
+renders.timesheets = function() {
+  // Weekly view — show most recent draft or create context for week 18
+  const draft = state.timesheets.find(t=>t.status==='Draft') || state.timesheets[state.timesheets.length-1];
+  if (draft) {
+    $('weekLabel').textContent = `${draft.week} Timesheet`;
+    $('weekProject').textContent = contractName(draft.contractId);
+    $('weekStatus').textContent = draft.status;
+    $('weekStatus').className = `badge ${draft.status==='Approved'?'green':draft.status==='Submitted'?'blue':draft.status==='Draft'?'gray':'red'}`;
+    const rate = contractRate(draft.contractId);
+    $('weekTotal').textContent = fmt(draft.earnings);
+
+    $('weeklyTable').innerHTML = tbl(
+      ['Day','Date','Type','Days','Rate','Value','Notes'],
+      [
+        ['Monday','Day 1','Billable','1.0',fmt(rate),fmt(rate),'Standard'],
+        ['Tuesday','Day 2','Billable','1.0',fmt(rate),fmt(rate),''],
+        ['Wednesday','Day 3','Billable','1.0',fmt(rate),fmt(rate),''],
+        ['Thursday','Day 4','Billable','1.0',fmt(rate),fmt(rate),''],
+        ['Friday','Day 5',draft.status==='Draft'?'Billable':'Holiday',draft.status==='Draft'?'1.0':'0','','',draft.notes||''],
+        ['','','<strong>Total</strong>','<strong>'+draft.days+'d</strong>','',`<strong>${fmt(draft.earnings)}</strong>`,''],
+      ]
+    );
+  }
+
+  // 56-week grid
+  const wGrid = $('weeksGrid');
+  const statusCycle = ['approved','approved','submitted','approved','holiday','approved','approved','draft'];
+  wGrid.innerHTML = Array.from({length:56},(_,i)=>{
+    const ts = state.timesheets.find(t=>t.week===`2026-W${String(i+1).padStart(2,'0')}`);
+    const status = ts ? ts.status.toLowerCase() : (i<14?statusCycle[i%statusCycle.length]:'draft');
+    const days = status==='holiday'?'Leave':'5 days';
+    const earn = status==='holiday'||i>17?'—':ts?fmt(ts.earnings):fmt(state.user.defaultRate*5);
+    return `<div class="week-cell ${status}" onclick="openWeekDetail(${i+1})"><strong>W${i+1}</strong><span>${days}</span><span>${earn}</span><span style="margin-top:4px">${badge(status.charAt(0).toUpperCase()+status.slice(1))}</span></div>`;
+  }).join('');
+
+  generateCalendar('monthlyCalendar');
+};
+
+renders.holidays = function() {
+  const annualUsed = state.holidays.filter(h=>h.type==='Annual Leave').length;
+  const allowance = 25;
+  $('holidayKpis').innerHTML = [
+    {label:'Allowance remaining',value:(allowance-annualUsed)+' days',trend:'of '+allowance,trendCls:'up',icon:'fa-plane-departure'},
+    {label:'Bank holidays',value:'8',trend:'UK 2026',trendCls:'warn',icon:'fa-building-columns'},
+    {label:'Sick days',value:'1',trend:'this year',trendCls:'up',icon:'fa-heart-pulse'},
+    {label:'Non-billable impact',value:fmt(annualUsed*state.user.defaultRate),trend:'lost billing',trendCls:'down',icon:'fa-sterling-sign'},
+  ].map(k=>`<div class="card kpi"><div class="kpi-top"><div class="kpi-icon"><i class="fa-solid ${k.icon}"></i></div><span class="trend ${k.trendCls}">${k.trend}</span></div><div><div class="kpi-value">${k.value}</div><div class="kpi-label">${k.label}</div></div></div>`).join('');
+
+  generateCalendar('holidayCalendar', true);
+
+  $('leaveTable').innerHTML = tbl(
+    ['ID','From','To','Type','Impact','Notes',''],
+    state.holidays.map(h=>[h.id,h.start,h.end,badge(h.type),h.impact,h.notes||'—',
+      `<button class="btn sm danger" onclick="deleteHoliday('${h.id}')"><i class="fa-solid fa-trash"></i></button>`
+    ])
+  );
+};
+
+renders.exports = function() {
+  $('exportHistTable').innerHTML = tbl(
+    ['Type','Period','Generated','File'],
+    state.exportHistory.length ? state.exportHistory.map(e=>[e.type,e.period,e.date,
+      `<button class="btn sm"><i class="fa-solid fa-download"></i> Re-download</button>`
+    ]) : [['No exports yet','','','<span style="color:var(--muted)">Generate your first PDF above</span>']]
+  );
+};
+
+renders.admin = function() {
+  const pending = state.timesheets.filter(t=>t.status==='Submitted');
+  $('adminKpis').innerHTML = [
+    {label:'Awaiting Approval',value:pending.length,trend:pending.length?'Action needed':'All clear',trendCls:pending.length?'warn':'up',icon:'fa-user-clock'},
+    {label:'Approved This Month',value:state.timesheets.filter(t=>t.status==='Approved').length,trend:'total',trendCls:'up',icon:'fa-check-circle'},
+    {label:'Active Contracts',value:state.contracts.filter(c=>c.status==='Active').length,trend:'live',trendCls:'up',icon:'fa-file-signature'},
+    {label:'Total Earned YTD',value:fmt(state.timesheets.filter(t=>t.status==='Approved').reduce((s,t)=>s+t.earnings,0)),trend:'+14.8%',trendCls:'up',icon:'fa-sterling-sign'},
+  ].map(k=>`<div class="card kpi"><div class="kpi-top"><div class="kpi-icon"><i class="fa-solid ${k.icon}"></i></div><span class="trend ${k.trendCls}">${k.trend}</span></div><div><div class="kpi-value">${k.value}</div><div class="kpi-label">${k.label}</div></div></div>`).join('');
+
+  $('approvalTable').innerHTML = tbl(
+    ['ID','Contract','Week','Days','Value','Status','Actions'],
+    pending.length ? pending.map(t=>[
+      t.id, contractName(t.contractId), t.week, t.days+'d', fmt(t.earnings), badge(t.status),
+      `<div style="display:flex;gap:6px">
+        <button class="btn sm success" onclick="approveTS('${t.id}')"><i class="fa-solid fa-check"></i> Approve</button>
+        <button class="btn sm danger" onclick="rejectTS('${t.id}')"><i class="fa-solid fa-xmark"></i> Reject</button>
+      </div>`
+    ]) : [['No timesheets pending','','','','','','']]
+  );
+
+  $('sysLog').innerHTML = state.sysLog.slice(0,10).map(l=>
+    `<div class="notif"><div class="notif-icon" style="background:rgba(33,212,253,.1)"><i class="fa-solid fa-circle-dot" style="color:var(--cyan)"></i></div><div><strong style="font-size:.88rem">${l.msg}</strong><time>${l.time}</time></div></div>`
+  ).join('');
+};
+
+renders.rates = function() {
+  $('ratesTable').innerHTML = tbl(
+    ['ID','Contract','Rate','From','To','Status',''],
+    state.rates.map(r=>[r.id, contractName(r.contractId), fmt(r.rate)+'/day', r.from, r.to, badge(r.status),
+      `<button class="btn sm danger" onclick="deleteRate('${r.id}')"><i class="fa-solid fa-trash"></i></button>`
+    ])
+  );
+};
+
+renders.reports = function() {
+  ['revenueChart','utilChart'].forEach(id=>{ const c=Chart.getChart(id); if(c) c.destroy(); });
+
+  const byContract = {};
+  state.timesheets.filter(t=>t.status==='Approved').forEach(t=>{
+    byContract[t.contractId] = (byContract[t.contractId]||0) + t.earnings;
+  });
+  const labels = Object.keys(byContract).map(id=>contractName(id));
+  const data = Object.values(byContract);
+
+  new Chart($('revenueChart'), {
+    type:'bar',
+    data:{labels,datasets:[{label:'Revenue',data,backgroundColor:['#21d4fd','#6d5dfc','#a855f7','#35e2a1'],borderRadius:6}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#9fb2ce',font:{family:'DM Sans'}}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#9fb2ce',font:{family:'DM Sans'},callback:v=>fmt(v)}}}}
+  });
+
+  const billable = state.timesheets.filter(t=>t.status==='Approved').reduce((s,t)=>s+t.days,0);
+  const holiday = state.holidays.reduce((s,h)=>{ const d=new Date(h.end)-new Date(h.start); return s+(isNaN(d)?1:Math.round(d/(86400000))+1); }, 0);
+  new Chart($('utilChart'), {
+    type:'doughnut',
+    data:{labels:['Billable','Holiday/Leave','Admin','Non-billable'],datasets:[{data:[billable,holiday,5,3],backgroundColor:['rgba(33,212,253,.74)','rgba(247,201,72,.74)','rgba(168,85,247,.74)','rgba(255,92,122,.74)'],borderColor:'rgba(255,255,255,.1)'}]},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#9fb2ce',font:{family:'DM Sans',size:11},usePointStyle:true}}}}
+  });
+
+  $('earningsSummTable').innerHTML = tbl(
+    ['Contract','Timesheets','Days Billed','Total Earned','Avg per Week'],
+    state.contracts.map(c=>{
+      const ts = state.timesheets.filter(t=>t.contractId===c.id&&t.status==='Approved');
+      const totalDays = ts.reduce((s,t)=>s+t.days,0);
+      const totalEarn = ts.reduce((s,t)=>s+t.earnings,0);
+      return [c.name, ts.length, totalDays+'d', fmt(totalEarn), fmt(ts.length?totalEarn/ts.length:0)];
+    })
+  );
+};
+
+renders.notifications = function() {
+  const unread = state.notifications.filter(n=>!n.read).length;
+  $('notifDot').style.display = unread ? 'block' : 'none';
+  $('notifBadge').style.display = unread ? 'block' : 'none';
+
+  $('notifList').innerHTML = state.notifications.length
+    ? state.notifications.map(n=>`
+      <div class="notif ${n.read?'':''}">
+        <div class="notif-icon" style="background:${n.color}"><i class="fa-solid ${n.icon}"></i></div>
+        <div style="flex:1"><strong>${n.title}</strong><p>${n.body}</p><time>${n.time}</time></div>
+        ${!n.read?`<span class="badge blue" style="flex-shrink:0">New</span>`:''}
+      </div>`).join('')
+    : '<p style="padding:24px;color:var(--muted);text-align:center">No notifications</p>';
+};
+
+renders.settings = function() {
+  const u = state.user;
+  if ($('settName')) $('settName').value = u.name||'';
+  if ($('settTitle')) $('settTitle').value = u.title||'';
+  if ($('settCompany')) $('settCompany').value = u.company||'';
+  if ($('settRate')) $('settRate').value = u.defaultRate||675;
+  if ($('settCurrency')) $('settCurrency').value = u.currency||'GBP';
+
+  // Storage used
+  const size = new Blob([JSON.stringify(state)]).size;
+  const el = $('storageUsed');
+  if (el) el.textContent = (size/1024).toFixed(1) + ' KB used of ~5 MB available';
+};
+
+// ═══════════════════════════════════════════
+// CALENDAR GENERATOR
+// ═══════════════════════════════════════════
+function generateCalendar(targetId, showHolidays=false) {
+  const el = $(targetId);
+  if (!el) return;
+  const names = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  let html = `<div class="cal-grid">${names.map(n=>`<div class="day-name">${n}</div>`).join('')}`;
+
+  for (let i=1; i<=35; i++) {
+    const day = i <= 30 ? i : i-30;
+    const muted = i > 30;
+    const dateStr = `2026-04-${String(day).padStart(2,'0')}`;
+    const isHol = showHolidays && state.holidays.some(h=>h.start<=dateStr&&dateStr<=h.end);
+    const ts = state.timesheets.find(t=>t.date===dateStr||t.week===`2026-W${Math.ceil(i/7)+13}`);
+    const isApproved = ts?.status==='Approved';
+    const isSubmitted = ts?.status==='Submitted';
+    const isWeekend = (i%7===6||i%7===0);
+    const cls = isHol ? 'holiday' : isApproved ? 'approved' : isSubmitted ? 'submitted' : '';
+    const note = isHol ? 'Leave / Holiday' : isApproved ? `Billable · ${fmt(ts.earnings)}` : isSubmitted ? 'Pending approval' : isWeekend ? 'Weekend' : 'Available';
+    html += `<div class="cal-day ${muted?'muted':''} ${cls}"><span>${day}</span><small>${note}</small></div>`;
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════
+let _currentModalType = '';
+
+function openModal(type, dataId='') {
+  _currentModalType = type;
+  const content = buildModalContent(type, dataId);
+  $('modalTitle').textContent = content.title;
+  $('modalBody').innerHTML = content.body;
+  $('modalBody').dataset.editId = dataId;
+  $('modalMask').classList.add('show');
+  $('appModal').classList.add('show');
+}
+
+function closeModal() {
+  $('modalMask').classList.remove('show');
+  $('appModal').classList.remove('show');
+}
+
+function saveModal() {
+  const editId = $('modalBody').dataset.editId;
+  const type = _currentModalType;
+
+  if (type === 'contract') {
+    const obj = {
+      id: editId || 'C'+String(state.contracts.length+1).padStart(3,'0'),
+      name: $('m_name')?.value||'New Contract',
+      client: $('m_client')?.value||'Client',
+      project: $('m_project')?.value||'Project',
+      start: $('m_start')?.value||'',
+      end: $('m_end')?.value||'',
+      rate: parseFloat($('m_rate')?.value)||state.user.defaultRate,
+      status: $('m_status')?.value||'Active',
+      progress: parseInt($('m_progress')?.value)||0,
+      notes: $('m_notes')?.value||'',
+    };
+    if (editId) { const i=state.contracts.findIndex(c=>c.id===editId); if(i>-1) state.contracts[i]=obj; }
+    else state.contracts.push(obj);
+    logSys(`Contract ${obj.name} ${editId?'updated':'created'}`);
+    saves(); go('contracts');
+  }
+
+  else if (type === 'project') {
+    const obj = {
+      id: editId || 'P'+String(state.projects.length+1).padStart(3,'0'),
+      code: $('m_code')?.value||'PRJ-00X',
+      name: $('m_name')?.value||'New Project',
+      client: $('m_client')?.value||'Client',
+      contractId: $('m_contractId')?.value||'',
+      rate: parseFloat($('m_rate')?.value)||state.user.defaultRate,
+      status: $('m_status')?.value||'Planning',
+      utilisation: parseInt($('m_util')?.value)||0,
+      notes: $('m_notes')?.value||'',
+    };
+    if (editId) { const i=state.projects.findIndex(p=>p.id===editId); if(i>-1) state.projects[i]=obj; }
+    else state.projects.push(obj);
+    logSys(`Project ${obj.name} ${editId?'updated':'created'}`);
+    saves(); go('projects');
+  }
+
+  else if (type === 'timesheet') {
+    const contractId = $('m_contractId')?.value;
+    const days = parseFloat($('m_days')?.value)||0;
+    const rate = contractRate(contractId);
+    const obj = {
+      id: 'TS'+String(state.timesheets.length+1).padStart(3,'0'),
+      week: $('m_week')?.value||'2026-W18',
+      contractId: contractId,
+      days: days,
+      hours: days * 8,
+      status: 'Draft',
+      notes: $('m_notes')?.value||'',
+      earnings: days * rate,
+      date: $('m_date')?.value||new Date().toISOString().slice(0,10),
+    };
+    state.timesheets.push(obj);
+    logSys(`Timesheet ${obj.id} created for ${contractName(contractId)}`);
+    saves(); go('timesheets');
+  }
+
+  else if (type === 'holiday') {
+    const obj = {
+      id: 'H'+String(state.holidays.length+1).padStart(3,'0'),
+      start: $('m_start')?.value||'',
+      end: $('m_end')?.value||'',
+      type: $('m_type')?.value||'Annual Leave',
+      impact: $('m_impact')?.value||'Non-billable',
+      notes: $('m_notes')?.value||'',
+    };
+    state.holidays.push(obj);
+    logSys(`Leave added: ${obj.type} ${obj.start}–${obj.end}`);
+    saves(); go('holidays');
+  }
+
+  else if (type === 'rate') {
+    const obj = {
+      id: 'R'+String(state.rates.length+1).padStart(3,'0'),
+      contractId: $('m_contractId')?.value||'',
+      rate: parseFloat($('m_rate')?.value)||state.user.defaultRate,
+      from: $('m_from')?.value||'',
+      to: $('m_to')?.value||'',
+      status: $('m_status')?.value||'Active',
+    };
+    state.rates.push(obj);
+    logSys(`Rate added for ${contractName(obj.contractId)}`);
+    saves(); go('rates');
+  }
+
+  else if (type === 'profile') {
+    const u = state.user;
+    u.name = $('m_name')?.value||u.name;
+    u.title = $('m_title')?.value||u.title;
+    u.company = $('m_company')?.value||u.company;
+    u.email = $('m_email')?.value||u.email;
+    u.phone = $('m_phone')?.value||u.phone;
+    u.location = $('m_location')?.value||u.location;
+    u.vat = $('m_vat')?.value||u.vat;
+    u.payment = $('m_payment')?.value||u.payment;
+    logSys('Profile updated');
+    saves(); go('profile');
+  }
+
+  else if (type === 'skill') {
+    const skill = $('m_skill')?.value?.trim();
+    if (skill) { state.skills.push(skill); logSys('Skill added: '+skill); }
+    saves(); go('profile');
+  }
+
+  closeModal();
+  toast('Saved successfully!');
+}
+
+function buildModalContent(type, editId='') {
+  const contractOpts = state.contracts.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+
+  if (type === 'contract') {
+    const c = editId ? state.contracts.find(x=>x.id===editId) : {};
+    return { title: editId ? 'Edit Contract' : 'Add Contract', body: `
+      <div class="form-grid">
+        <div class="field wide"><label>Contract Name</label><div class="inp"><input id="m_name" value="${c?.name||''}"/></div></div>
+        <div class="field"><label>Client</label><div class="inp"><input id="m_client" value="${c?.client||''}"/></div></div>
+        <div class="field"><label>Project Name</label><div class="inp"><input id="m_project" value="${c?.project||''}"/></div></div>
+        <div class="field"><label>Start Date</label><div class="inp"><input type="date" id="m_start" value="${c?.start||''}"/></div></div>
+        <div class="field"><label>End Date</label><div class="inp"><input type="date" id="m_end" value="${c?.end||''}"/></div></div>
+        <div class="field"><label>Day Rate (£)</label><div class="inp"><input type="number" id="m_rate" value="${c?.rate||state.user.defaultRate}"/></div></div>
+        <div class="field"><label>Status</label><div class="inp"><select id="m_status"><option ${c?.status==='Active'?'selected':''}>Active</option><option ${c?.status==='Review'?'selected':''}>Review</option><option ${c?.status==='Closed'?'selected':''}>Closed</option></select></div></div>
+        <div class="field"><label>Progress %</label><div class="inp"><input type="number" id="m_progress" value="${c?.progress||0}" min="0" max="100"/></div></div>
+        <div class="field wide"><label>Notes</label><div class="inp"><textarea id="m_notes">${c?.notes||''}</textarea></div></div>
+      </div>`};
+  }
+
+  if (type === 'project') {
+    const p = editId ? state.projects.find(x=>x.id===editId) : {};
+    return { title: editId ? 'Edit Project' : 'Add Project', body: `
+      <div class="form-grid">
+        <div class="field"><label>Project Code</label><div class="inp"><input id="m_code" value="${p?.code||''}"/></div></div>
+        <div class="field"><label>Project Name</label><div class="inp"><input id="m_name" value="${p?.name||''}"/></div></div>
+        <div class="field"><label>Client</label><div class="inp"><input id="m_client" value="${p?.client||''}"/></div></div>
+        <div class="field"><label>Contract</label><div class="inp"><select id="m_contractId">${contractOpts}</select></div></div>
+        <div class="field"><label>Day Rate (£)</label><div class="inp"><input type="number" id="m_rate" value="${p?.rate||state.user.defaultRate}"/></div></div>
+        <div class="field"><label>Status</label><div class="inp"><select id="m_status"><option>On Track</option><option>Discovery</option><option>At Risk</option><option>Planning</option><option>Complete</option></select></div></div>
+        <div class="field"><label>Utilisation %</label><div class="inp"><input type="number" id="m_util" value="${p?.utilisation||50}" min="0" max="100"/></div></div>
+        <div class="field wide"><label>Notes</label><div class="inp"><textarea id="m_notes">${p?.notes||''}</textarea></div></div>
+      </div>`};
+  }
+
+  if (type === 'timesheet') {
+    return { title: 'New Timesheet Entry', body: `
+      <div class="form-grid">
+        <div class="field"><label>Contract</label><div class="inp"><select id="m_contractId">${contractOpts}</select></div></div>
+        <div class="field"><label>Week (e.g. 2026-W18)</label><div class="inp"><input id="m_week" value="2026-W18"/></div></div>
+        <div class="field"><label>Entry Date</label><div class="inp"><input type="date" id="m_date" value="${new Date().toISOString().slice(0,10)}"/></div></div>
+        <div class="field"><label>Days Worked</label><div class="inp"><input type="number" id="m_days" value="5" min="0" max="7" step="0.5"/></div></div>
+        <div class="field wide"><label>Work Notes</label><div class="inp"><textarea id="m_notes" placeholder="What did you work on this week?"></textarea></div></div>
+      </div>`};
+  }
+
+  if (type === 'holiday') {
+    return { title: 'Mark Holiday / Leave', body: `
+      <div class="form-grid">
+        <div class="field"><label>From</label><div class="inp"><input type="date" id="m_start"/></div></div>
+        <div class="field"><label>To</label><div class="inp"><input type="date" id="m_end"/></div></div>
+        <div class="field"><label>Leave Type</label><div class="inp"><select id="m_type"><option>Annual Leave</option><option>Bank Holiday</option><option>Sick Leave</option><option>Unpaid Leave</option></select></div></div>
+        <div class="field"><label>Timesheet Impact</label><div class="inp"><select id="m_impact"><option>Non-billable</option><option>Paid Leave</option><option>Client holiday</option></select></div></div>
+        <div class="field wide"><label>Notes</label><div class="inp"><textarea id="m_notes"></textarea></div></div>
+      </div>`};
+  }
+
+  if (type === 'rate') {
+    return { title: 'Add Rate Configuration', body: `
+      <div class="form-grid">
+        <div class="field"><label>Contract</label><div class="inp"><select id="m_contractId">${contractOpts}</select></div></div>
+        <div class="field"><label>Day Rate (£)</label><div class="inp"><input type="number" id="m_rate" value="${state.user.defaultRate}"/></div></div>
+        <div class="field"><label>Effective From</label><div class="inp"><input type="date" id="m_from"/></div></div>
+        <div class="field"><label>Effective To</label><div class="inp"><input type="date" id="m_to"/></div></div>
+        <div class="field wide"><label>Status</label><div class="inp"><select id="m_status"><option>Active</option><option>Future</option><option>Expired</option></select></div></div>
+      </div>`};
+  }
+
+  if (type === 'profile') {
+    const u = state.user;
+    return { title: 'Edit Profile', body: `
+      <div class="form-grid">
+        <div class="field"><label>Full Name</label><div class="inp"><input id="m_name" value="${u.name||''}"/></div></div>
+        <div class="field"><label>Job Title</label><div class="inp"><input id="m_title" value="${u.title||''}"/></div></div>
+        <div class="field"><label>Email</label><div class="inp"><input id="m_email" value="${u.email||''}"/></div></div>
+        <div class="field"><label>Phone</label><div class="inp"><input id="m_phone" value="${u.phone||''}"/></div></div>
+        <div class="field"><label>Company</label><div class="inp"><input id="m_company" value="${u.company||''}"/></div></div>
+        <div class="field"><label>Location</label><div class="inp"><input id="m_location" value="${u.location||''}"/></div></div>
+        <div class="field"><label>VAT Number</label><div class="inp"><input id="m_vat" value="${u.vat||''}"/></div></div>
+        <div class="field"><label>Payment Terms</label><div class="inp"><input id="m_payment" value="${u.payment||''}"/></div></div>
+      </div>`};
+  }
+
+  if (type === 'skill') {
+    return { title: 'Add Skill', body: `<div class="field"><label>Skill / Certification</label><div class="inp"><input id="m_skill" placeholder="e.g. Azure Databricks"/></div></div>` };
+  }
+
+  return { title: 'Add Item', body: '' };
+}
+
+// ═══════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════
+function saves() { saveState(); }
+
+function editContract(id) { openModal('contract', id); }
+function deleteContract(id) { if(!confirm('Delete this contract?')) return; state.contracts = state.contracts.filter(c=>c.id!==id); logSys('Contract deleted: '+id); saves(); go('contracts'); }
+
+function editProject(id) { openModal('project', id); }
+function deleteProject(id) { if(!confirm('Delete this project?')) return; state.projects = state.projects.filter(p=>p.id!==id); logSys('Project deleted: '+id); saves(); go('projects'); }
+
+function deleteHoliday(id) { if(!confirm('Delete this leave entry?')) return; state.holidays = state.holidays.filter(h=>h.id!==id); saves(); go('holidays'); }
+function deleteRate(id) { if(!confirm('Delete this rate?')) return; state.rates = state.rates.filter(r=>r.id!==id); saves(); go('rates'); }
+function removeSkill(i) { state.skills.splice(i,1); saves(); go('profile'); }
+
+function approveTS(id) {
+  const ts = state.timesheets.find(t=>t.id===id);
+  if (ts) { ts.status='Approved'; logSys(`TS ${id} approved`); saves(); go('admin'); toast('Timesheet approved!'); }
+}
+function rejectTS(id) {
+  const ts = state.timesheets.find(t=>t.id===id);
+  if (ts) { ts.status='Rejected'; logSys(`TS ${id} rejected`); saves(); go('admin'); toast('Timesheet rejected','error'); }
+}
+function submitCurrentWeek() {
+  const draft = state.timesheets.find(t=>t.status==='Draft');
+  if (draft) { draft.status='Submitted'; logSys(`TS ${draft.id} submitted`); saves(); go('timesheets'); toast('Timesheet submitted!'); }
+}
+
+function openWeekDetail(w) {
+  const ts = state.timesheets.find(t=>t.week===`2026-W${String(w).padStart(2,'0')}`);
+  toast(`Week ${w}: ${ts ? ts.status + ' — ' + fmt(ts.earnings) : 'No data'}`);
+}
+
+function saveBank() {
+  ['bankName','accountName','sortCode','accountNumber','bic'].forEach(k=>{
+    const el = $('bank_'+k);
+    if (el) state.bank[k] = el.value;
+  });
+  saves(); toast('Bank details saved');
+}
+
+function saveSettings() {
+  state.user.name = $('settName')?.value || state.user.name;
+  state.user.title = $('settTitle')?.value || state.user.title;
+  state.user.company = $('settCompany')?.value || state.user.company;
+  state.user.defaultRate = parseFloat($('settRate')?.value) || state.user.defaultRate;
+  state.user.currency = $('settCurrency')?.value || state.user.currency;
+  saves();
+  $('sidebarName').textContent = state.user.name;
+  $('sidebarAvatar').textContent = getInitials(state.user.name);
+  toast('Settings saved!');
+}
+
+function markAllRead() {
+  state.notifications.forEach(n=>n.read=true);
+  saves(); go('notifications');
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'chronexa-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  toast('Data exported!');
+}
+
+function importData() {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.json';
+  input.onchange = e => {
+    const fr = new FileReader();
+    fr.onload = ev => {
+      try {
+        const imported = JSON.parse(ev.target.result);
+        if (imported.user && imported.contracts) {
+          Object.assign(state, imported);
+          saves(); go('dashboard'); toast('Data imported!');
+        } else { toast('Invalid backup file','error'); }
+      } catch { toast('Failed to parse JSON','error'); }
+    };
+    fr.readAsText(e.target.files[0]);
+  };
+  input.click();
+}
+
+function clearAllData() {
+  if (!confirm('This will delete ALL your data. Are you sure?')) return;
+  if (!confirm('Really delete everything? This cannot be undone.')) return;
+  localStorage.removeItem(STORE_KEY);
+  location.reload();
+}
+
+// ═══════════════════════════════════════════
+// PDF EXPORT
+// ═══════════════════════════════════════════
+function exportPdf(type) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const u = state.user;
+
+  // Header bar
+  doc.setFillColor(7, 17, 31);
+  doc.rect(0, 0, 210, 16, 'F');
+  doc.setFillColor(33, 212, 253);
+  doc.rect(0, 0, 4, 16, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(12);
+  doc.text('CHRONEXA', 10, 11);
+  doc.setFontSize(9);
+  doc.setFont('helvetica','normal');
+  doc.text(type.toUpperCase() + ' REPORT', 150, 11);
+
+  // Contractor info
+  doc.setTextColor(7, 17, 31);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(18);
+  doc.text(u.name, 14, 30);
+  doc.setFontSize(10);
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(100, 120, 150);
+  doc.text(`${u.company}  ·  ${u.email}  ·  VAT: ${u.vat}`, 14, 38);
+
+  // Info grid
+  const info = [
+    ['Report Type', type],
+    ['Period', $('exportPeriod')?.value || 'April 2026'],
+    ['Default Rate', fmt(u.defaultRate) + '/day'],
+    ['Generated', new Date().toLocaleDateString('en-GB')],
+  ];
+  doc.setTextColor(7,17,31);
+  info.forEach(([k,v],i) => {
+    const x = i%2===0?14:110; const y = 52 + Math.floor(i/2)*10;
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(80,100,140); doc.text(k+':', x, y);
+    doc.setFont('helvetica','normal'); doc.setTextColor(20,20,40); doc.text(v, x+32, y);
+  });
+
+  // Table
+  const hY = 78;
+  doc.setFillColor(240,245,255);
+  doc.rect(14,hY,182,9,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(60,80,120);
+  ['Week','Contract','Days','Rate','Earnings','Status'].forEach((h,i)=>doc.text(h,16+i*31,hY+6));
+
+  const rows = state.timesheets.slice(0,10);
+  doc.setFont('helvetica','normal');
+  rows.forEach((t,ri) => {
+    const y = hY+9+(ri*9);
+    if (ri%2===0) { doc.setFillColor(248,250,255); doc.rect(14,y,182,9,'F'); }
+    doc.setTextColor(30,30,50);
+    [t.week, contractName(t.contractId).slice(0,18), t.days+'d', fmt(contractRate(t.contractId))+'/d', fmt(t.earnings), t.status]
+      .forEach((cell,ci) => doc.text(String(cell),16+ci*31,y+6));
+  });
+
+  // Total bar
+  const tY = hY+9+(rows.length*9)+2;
+  doc.setFillColor(33,212,253);
+  doc.rect(14,tY,182,9,'F');
+  doc.setFont('helvetica','bold'); doc.setTextColor(7,17,31);
+  doc.text('TOTAL BILLABLE', 16, tY+6);
+  const total = state.timesheets.filter(t=>t.status==='Approved').reduce((s,t)=>s+t.earnings,0);
+  doc.text(fmt(total), 170, tY+6);
+
+  // Footer
+  doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(150,160,180);
+  doc.text(`Chronexa Personal Workspace  ·  Generated ${new Date().toLocaleString('en-GB')}  ·  Confidential`, 14, 285);
+
+  const filename = `chronexa-${type.toLowerCase().replace(/\s+/g,'-')}-${new Date().toISOString().slice(0,10)}.pdf`;
+  doc.save(filename);
+
+  // Log export
+  state.exportHistory.unshift({ type, period: $('exportPeriod')?.value||'April 2026', date: new Date().toLocaleString('en-GB'), file: filename });
+  if (state.exportHistory.length > 20) state.exportHistory.pop();
+  saves();
+  toast(`${type} PDF generated!`);
+}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function getInitials(name) {
+  return (name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+}
+
+function toggleSidebar(show) {
+  $('sidebar').classList.toggle('show', show);
+  $('sidebarMask').classList.toggle('show', show);
+}
+
+// ═══════════════════════════════════════════
+// LOGIN & BOOT
+// ═══════════════════════════════════════════
+let _selectedRole = 'user';
+
+qsa('.role-tab').forEach(btn => btn.addEventListener('click', () => {
+  _selectedRole = btn.dataset.role;
+  qsa('.role-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}));
+
+$('loginBtn').addEventListener('click', () => {
+  const name = $('loginName').value.trim() || 'Contractor';
+  if (name !== state.user.name) { state.user.name = name; saves(); }
+  state.role = _selectedRole;
+  saves();
+
+  $('loginScreen').style.opacity = '0';
+  $('loginScreen').style.transition = 'opacity .4s';
+  setTimeout(() => {
+    $('loginScreen').classList.add('hidden');
+    $('appShell').classList.remove('hidden');
+    bootApp();
+  }, 380);
+});
+
+$('logoutBtn').addEventListener('click', () => {
+  $('appShell').classList.add('hidden');
+  $('loginScreen').classList.remove('hidden');
+  $('loginScreen').style.opacity = '1';
+});
+
+function bootApp() {
+  // Set user info
+  $('sidebarName').textContent = state.user.name;
+  $('sidebarAvatar').textContent = getInitials(state.user.name);
+  $('sidebarRole').textContent = state.role === 'admin' ? 'Admin Console' : 'Contractor';
+  $('loginName').value = state.user.name;
+
+  // Admin nav visibility
+  qsa('.admin-only').forEach(el => el.style.display = state.role === 'admin' ? '' : 'none');
+
+  // Nav clicks
+  qsa('.nav-item[data-view]').forEach(btn => btn.addEventListener('click', () => go(btn.dataset.view)));
+
+  // Tabs - timesheets
+  qsa('#tsTabs .tab').forEach(tab => tab.addEventListener('click', () => {
+    qsa('#tsTabs .tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    ['weeklyPanel','monthlyPanel','yearlyPanel'].forEach(id=>$(id)?.classList.add('hidden'));
+    $(tab.dataset.tab + 'Panel')?.classList.remove('hidden');
+  }));
+
+  // Quick add
+  $('quickAddBtn').addEventListener('click', () => openModal('timesheet'));
+
+  // Notifications button
+  $('notifBtn').addEventListener('click', () => go('notifications'));
+
+  // Mobile sidebar
+  $('mobMenuBtn')?.addEventListener('click', () => toggleSidebar(true));
+  $('sidebarMask').addEventListener('click', () => toggleSidebar(false));
+
+  // Modal mask
+  $('modalMask').addEventListener('click', closeModal);
+
+  // Global search
+  $('globalSearch').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase();
+    if (!q) return;
+    const match = state.contracts.find(c=>c.name.toLowerCase().includes(q));
+    if (match) toast('Found: '+match.name);
+  });
+
+  // Notification unread count
+  const unread = state.notifications.filter(n=>!n.read).length;
+  $('notifDot').style.display = unread ? 'block' : 'none';
+  $('notifBadge').style.display = unread ? 'block' : 'none';
+
+  go(state.role === 'admin' ? 'admin' : 'dashboard');
+  toast('Welcome back, ' + state.user.name + '! 👋');
+}
+
+// ═══════════════════════════════════════════
+// PWA SERVICE WORKER REGISTRATION
+// ═══════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    // Inline service worker as blob
+    const swCode = `
+const CACHE='chronexa-v1';
+self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['/'])).then(()=>self.skipWaiting()))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))))});
+self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});
+    `;
+    const blob = new Blob([swCode], {type:'text/javascript'});
+    const swUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl).catch(()=>{});
+  });
+}
+
+// Expose globally
+window.go=go; window.openModal=openModal; window.closeModal=closeModal; window.saveModal=saveModal;
+window.exportPdf=exportPdf; window.editContract=editContract; window.deleteContract=deleteContract;
+window.editProject=editProject; window.deleteProject=deleteProject; window.deleteHoliday=deleteHoliday;
+window.deleteRate=deleteRate; window.removeSkill=removeSkill; window.approveTS=approveTS;
+window.rejectTS=rejectTS; window.submitCurrentWeek=submitCurrentWeek; window.openWeekDetail=openWeekDetail;
+window.saveBank=saveBank; window.saveSettings=saveSettings; window.markAllRead=markAllRead;
+window.exportData=exportData; window.importData=importData; window.clearAllData=clearAllData;
+</script>
+</body>
+</html>
